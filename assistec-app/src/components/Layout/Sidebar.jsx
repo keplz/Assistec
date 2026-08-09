@@ -10,7 +10,8 @@ import {
   Wallet,
   BarChart3,
   Settings,
-  Menu
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 import logoCompleta from "../../assets/logo-completa.png";
@@ -89,12 +90,19 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <button
-        className="toggle-button"
-        onClick={() => setExpandida(!expandida)}
-      >
-        <Menu size={20} />
-      </button>
+      <div className="sidebar-footer">
+        <button
+          className="collapse-button"
+          onClick={() => setExpandida(!expandida)}
+          aria-label={expandida ? "Fechar menu" : "Abrir menu"}
+        >
+          {expandida ? (
+              <PanelLeftClose size={20} />
+            ) :( 
+              <PanelLeftOpen size={20} />
+            )}
+        </button>
+      </div>  
 
     </aside>
   );
