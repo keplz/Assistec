@@ -1,16 +1,18 @@
 import { db } from "../firebase/config";
+
 import {
   collection,
   addDoc,
   getDocs,
   doc,
   getDoc,
-  setDoc
+  setDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 const osCollection = collection(db, "ordens_servico");
 
-// 🔥 gerar número automático
+// 🔥 Gerar número automático da OS
 async function gerarNumeroOS() {
   const ref = doc(db, "counters", "ordem_servico");
   const snap = await getDoc(ref);
@@ -21,8 +23,9 @@ async function gerarNumeroOS() {
     numero = snap.data().value + 1;
   }
 
-  // 🔥 cria ou atualiza automaticamente
-  await setDoc(ref, { value: numero }, { merge: true });
+  await setDoc(ref, {
+    value: numero,
+  });
 
   return numero;
 }
@@ -31,19 +34,68 @@ async function gerarNumeroOS() {
 export async function criarOS(dados) {
   const numero = await gerarNumeroOS();
 
-  await addDoc(osCollection, {
+  const novaOS = {
     numero,
-    ...dados,
-    createdAt: new Date()
-  });
+
+    clienteId: dados.clienteId || "",
+
+    aparelho: {
+      marca: dados.marca || "",
+      modelo: dados.modelo || "",
+      imei: dados.imei || "",
+    },
+
+    defeito: dados.defeito || "",
+
+    status: dados.status || "aberto",
+
+    valorServico: dados.valorServico || 0,
+
+    formaPagamento: dados.formaPagamento || "",
+
+    statusPagamento: dados.statusPagamento || "pendente",
+
+    dataEntrada: dados.dataEntrada || new Date(),
+
+    dataPrevisaoEntrega: dados.dataPrevisaoEntrega || null,
+
+    dataEntrega: dados.dataEntrega || null,
+
+    observacoes: dados.observacoes || "",
+
+    createdAt: new Date(),
+  };
+
+  await addDoc(osCollection, novaOS);
 }
 
-// 🔹 Listar
+// 🔹 Listar OS
 export async function listarOS() {
   const snapshot = await getDocs(osCollection);
 
-  return snapshot.docs.map(doc => ({
+  return snapshot.docs.map((doc) => ({
     id: doc.id,
-    ...doc.data()
+    ...doc.data(),
   }));
+}
+
+export async function atualizarOS(id, dados) {
+  const osRef = doc(db, "ordens_servico", id);
+
+  await updateDoc(osRef, {
+    clienteId: dados.clienteId || "",
+    aparelho: {
+      marca: dados.marca || "",
+      modelo: dados.modelo || "",
+      imei: dados.imei || "",
+    },
+    defeito: dados.defeito || "",
+    status: dados.status || "aberto",
+    valorServico: dados.valorServico || 0,
+    formaPagamento: dados.formaPagamento || "",
+    statusPagamento: dados.statusPagamento || "pendente",
+    dataPrevisaoEntrega: dados.dataPrevisaoEntrega || null,
+    dataEntrega: dados.dataEntrega || null,
+    observacoes: dados.observacoes || "",
+  });
 }
