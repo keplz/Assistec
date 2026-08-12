@@ -4,6 +4,7 @@ import "../styles/modals/osDetailsModal.css"
 export default function OSDetailsModal({ 
   os,
   onClose,
+  onEdit,
  }) {
   if (!os) return null;
 
