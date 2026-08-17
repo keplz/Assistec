@@ -5,89 +5,23 @@ import { ouvirClientes } from "../services/clienteService";
 import OSDetailsModal from "../modals/OSDetailsModal";
 import OSEditModal from "../modals/OSEditModal";
 
+import "../styles/ordemServico.css";
+import OSCreateModal from "../modals/OSCreateModal";
+
 export default function OrdemServico() {
   const [clientes, setClientes] = useState([]);
   const [ordens, setOrdens] = useState([]);
 
+  const [criandoOS, setCriandoOS] = useState(false);
+
   const [osSelecionada, setOsSelecionada] = useState(null);
-  const [ osEditando, setOsEditando ] = useState(null);
-
-  const [clienteId, setClienteId] = useState("");
-  const [marca, setMarca] = useState("");
-  const [modelo, setModelo] = useState("");
-  const [imei, setImei] = useState("");
-  const [defeito, setDefeito] = useState("");
-
-  const [status, setStatus] = useState("aberto");
-
-  const [valorServico, setValorServico] = useState("");
-  const [formaPagamento, setFormaPagamento] = useState("");
-  const [statusPagamento, setStatusPagamento] = useState("pendente");
-
-  const [dataPrevisaoEntrega, setDataPrevisaoEntrega] = useState("");
-  const [observacoes, setObservacoes] = useState("");
+  const [osEditando, setOsEditando] = useState(null);
 
   async function carregarOS() {
     const data = await listarOS();
     setOrdens(data);
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    if (!clienteId || !marca || !modelo) {
-      alert("Preencha os campos obrigatórios");
-      return;
-    }
-
-    try {
-      await criarOS({
-        clienteId,
-
-        marca,
-        modelo,
-        imei,
-
-        defeito,
-
-        status,
-
-        valorServico: Number(valorServico) || 0,
-
-        formaPagamento,
-
-        statusPagamento,
-
-        dataPrevisaoEntrega,
-
-        observacoes,
-      });
-
-      alert("Ordem de serviço criada com sucesso!");
-
-      // Limpar formulário
-      setClienteId("");
-      setMarca("");
-      setModelo("");
-      setImei("");
-      setDefeito("");
-
-      setStatus("aberto");
-
-      setValorServico("");
-      setFormaPagamento("");
-      setStatusPagamento("pendente");
-
-      setDataPrevisaoEntrega("");
-      setObservacoes("");
-
-      await carregarOS();
-
-    } catch (error) {
-      console.error("Erro ao criar OS:", error);
-      alert("Erro ao criar a ordem de serviço.");
-    }
-  }
 
   useEffect(() => {
     const unsubscribeClientes = ouvirClientes(setClientes);
@@ -97,170 +31,137 @@ export default function OrdemServico() {
     return () => unsubscribeClientes();
   }, []);
 
-  return (
-    <div>
-      <h2>Ordem de Serviço</h2>
+    return (
+      <div className="os-page">
 
-      <form onSubmit={handleSubmit}>
+        {/* CABEÇALHO */}
+        <div className="os-page-header">
+          <div>
+            <h2>Ordens de Serviço</h2>
 
-        {/* CLIENTE */}
+            <p>
+              Gerencie os serviços e acompanhe o andamento das ordens.
+            </p>
+          </div>
 
-        <select
-          value={clienteId}
-          onChange={(e) => setClienteId(e.target.value)}
-        >
-          <option value="">Selecione o cliente *</option>
-
-          {clientes.map((cliente) => (
-            <option key={cliente.id} value={cliente.id}>
-              {cliente.nome}
-            </option>
-          ))}
-        </select>
-
-        {/* APARELHO */}
-
-        <input
-          placeholder="Marca *"
-          value={marca}
-          onChange={(e) => setMarca(e.target.value)}
-        />
-
-        <input
-          placeholder="Modelo *"
-          value={modelo}
-          onChange={(e) => setModelo(e.target.value)}
-        />
-
-        <input
-          placeholder="IMEI"
-          value={imei}
-          onChange={(e) => setImei(e.target.value)}
-        />
-
-        {/* DEFEITO */}
-
-        <input
-          placeholder="Defeito relatado"
-          value={defeito}
-          onChange={(e) => setDefeito(e.target.value)}
-        />
-
-        {/* STATUS */}
-
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option value="aberto">Aberto</option>
-          <option value="em_analise">Em análise</option>
-          <option value="aguardando_peca">
-            Aguardando peça
-          </option>
-          <option value="pronto">Pronto</option>
-          <option value="finalizado">Finalizado</option>
-          <option value="em_divida">Em dívida</option>
-        </select>
-
-        {/* VALOR */}
-
-        <input
-          type="number"
-          placeholder="Valor do serviço"
-          value={valorServico}
-          onChange={(e) => setValorServico(e.target.value)}
-        />
-
-        {/* PAGAMENTO */}
-
-        <select
-          value={formaPagamento}
-          onChange={(e) => setFormaPagamento(e.target.value)}
-        >
-          <option value="">Forma de pagamento</option>
-          <option value="dinheiro">Dinheiro</option>
-          <option value="pix">PIX</option>
-          <option value="cartao">Cartão</option>
-        </select>
-
-        <select
-          value={statusPagamento}
-          onChange={(e) => setStatusPagamento(e.target.value)}
-        >
-          <option value="pendente">Pagamento pendente</option>
-          <option value="pago">Pago</option>
-        </select>
-
-        {/* DATA */}
-
-        <label>
-          Previsão de entrega
-        </label>
-
-        <input
-          type="date"
-          value={dataPrevisaoEntrega}
-          onChange={(e) =>
-            setDataPrevisaoEntrega(e.target.value)
-          }
-        />
-
-        {/* OBSERVAÇÕES */}
-
-        <textarea
-          placeholder="Observações"
-          value={observacoes}
-          onChange={(e) => setObservacoes(e.target.value)}
-        />
-
-        <button type="submit">
-          Criar OS
-        </button>
-
-      </form>
-
-      {/* LISTAGEM */}
-
-      <h3>Ordens cadastradas</h3>
-
-      <ul>
-        {ordens.map((os) => (
-          <li 
-            key={os.id}
-            onClick={() => {
-                const cliente = clientes.find(
-                  (c) => c.id === os.clienteId
-                );
-
-                setOsSelecionada({
-                  ...os,
-                  clienteNome: cliente ? cliente.nome : "Cliente não encontrado",
-                });
-              }
-            }
-            style={{ cursor: "pointer" }}
+          <button
+            className="os-new-button"
+            onClick={() => setCriandoOS(true)}            
           >
+            + Nova OS
+          </button>
+        </div>
 
-            OS #{os.numero} —{" "}
 
-            {os.aparelho?.marca}{" "}
-            {os.aparelho?.modelo}{" "}
+        {/* RESUMO */}
+        <div className="os-summary">
 
-            - {os.status}
+          <div className="os-summary-card">
+            <span className="os-summary-label">
+              Total de OS
+            </span>
 
-          </li>
-        ))}
-      </ul>
+            <strong>
+              {ordens.length}
+            </strong>
+          </div>
+
+
+          <div className="os-summary-card">
+            <span className="os-summary-label">
+              Em andamento
+            </span>
+
+            <strong>
+              {
+                ordens.filter(
+                  (os) =>
+                    os.status !== "finalizado" &&
+                    os.status !== "pronto"
+                ).length
+              }
+            </strong>
+          </div>
+
+
+          <div className="os-summary-card">
+            <span className="os-summary-label">
+              Prontas
+            </span>
+
+            <strong>
+              {
+                ordens.filter(
+                  (os) => os.status === "pronto"
+                ).length
+              }
+            </strong>
+          </div>
+
+        </div>
+
+
+        {/* LISTAGEM TEMPORÁRIA */}
+
+        <div className="os-list-section">
+
+          <h3>Ordens cadastradas</h3>
+
+          <ul>
+            {ordens.map((os) => (
+              <li
+                key={os.id}
+                onClick={() => {
+                  const cliente = clientes.find(
+                    (c) => c.id === os.clienteId
+                  );
+
+                  setOsSelecionada({
+                    ...os,
+                    clienteNome: cliente
+                      ? cliente.nome
+                      : "Cliente não encontrado",
+                  });
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                OS #{os.numero} —{" "}
+                {os.aparelho?.marca}{" "}
+                {os.aparelho?.modelo}{" "}
+                - {os.status}
+              </li>
+            ))}
+          </ul>
+
+        </div>
+
+
+        {/*MODAL DE CRIAÇÃO*/}
+
+        {criandoOS && (
+          <OSCreateModal
+            clientes={clientes}
+            onClose={() => setCriandoOS(false)}
+            onCreated={carregarOS}
+          />
+        )}
+
+
+        {/* MODAL DE DETALHES */}
+
         {osSelecionada && (
           <OSDetailsModal
             os={osSelecionada}
             onClose={() => setOsSelecionada(null)}
             onEdit={() => {
               setOsEditando(osSelecionada);
-              setOsSelecionada(null)
+              setOsSelecionada(null);
             }}
           />
         )}
+
+
+        {/* MODAL DE EDIÇÃO */}
 
         {osEditando && (
           <OSEditModal
@@ -270,6 +171,7 @@ export default function OrdemServico() {
             onUpdated={carregarOS}
           />
         )}
-    </div>
-  );
+
+      </div>
+    );
 }

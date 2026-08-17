@@ -1,0 +1,116 @@
+.os-page {
+  width: 100%;
+  padding: 32px;
+}
+
+/* CABEÇALHO */
+
+.os-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 28px;
+}
+
+.os-page-header h2 {
+  margin: 0;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  color: #0f172a;
+}
+
+.os-page-header p {
+  margin: 6px 0 0;
+
+  font-size: 14px;
+
+  color: #64748b;
+}
+
+
+/* BOTÃO NOVA OS */
+
+.os-new-button {
+  border: none;
+  border-radius: 10px;
+
+  padding: 11px 18px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.os-new-button:hover {
+  background: #1d4ed8;
+}
+
+
+/* RESUMO */
+
+.os-summary {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 18px;
+
+  margin-bottom: 28px;
+}
+
+.os-summary-card {
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 14px;
+
+  padding: 20px 22px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.os-summary-label {
+  font-size: 13px;
+
+  color: #64748b;
+}
+
+.os-summary-card strong {
+  font-size: 28px;
+
+  color: #0f172a;
+}
+
+
+/* RESPONSIVO */
+
+@media (max-width: 800px) {
+  .os-page {
+    padding: 20px;
+  }
+
+  .os-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .os-page-header {
+    align-items: flex-start;
+
+    gap: 16px;
+
+    flex-direction: column;
+  }
+}
